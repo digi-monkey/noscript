@@ -70,4 +70,4 @@ impl Event {
     }
 }
 
-pub const NOSCRIPT_KIND: i32 = 32024;
+pub const NOSCRIPT_KIND: i32 = 32042;
