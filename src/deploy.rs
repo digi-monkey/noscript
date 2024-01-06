@@ -25,7 +25,7 @@ async fn main() -> Result<()> {
     let content = read_wasm();
     let e = Train::from_local_vecs_to_event().unwrap();
     let mut tags = to_sdk_tags(e.tags);
-    let filter: Filter = Filter::new().kind(Kind::from(NOSCRIPT_KIND as u64));
+    let filter: Filter = Filter::new().kind(Kind::TextNote);
     let description = "a noscript that filter text for computer&internet topic only";
     let filter_tags = create_filter_tag(filter, Some(description.to_string()));
     for t in filter_tags {
