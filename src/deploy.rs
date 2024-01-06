@@ -26,8 +26,9 @@ async fn main() -> Result<()> {
     let e = Train::from_local_vecs_to_event().unwrap();
     let mut tags = to_sdk_tags(e.tags);
     let filter: Filter = Filter::new().kind(Kind::TextNote);
+    let id = "computer&internet";
     let description = "a noscript that filter text for computer&internet topic only";
-    let filter_tags = create_filter_tag(filter, Some(description.to_string()));
+    let filter_tags = create_filter_tag(filter, Some(id.to_string()), Some(description.to_string()));
     for t in filter_tags {
         tags.push(t);
     }
@@ -54,7 +55,7 @@ pub fn to_sdk_tags(tags: Vec<Vec<String>>) -> Vec<Tag> {
 }
 
 pub fn read_wasm() -> String {
-    let wasm_file_path = "pkg/index_bg.wasm";
+    let wasm_file_path = "pkg/noscript_bg.wasm";
     let mut wasm_file = File::open(wasm_file_path).expect("Failed to open .wasm file");
     let mut wasm_bytes = Vec::new();
     wasm_file
@@ -68,7 +69,7 @@ pub fn read_wasm() -> String {
     return wasm_base64;
 }
 
-pub fn create_filter_tag(filter: Filter, description: Option<String>) -> Vec<Tag> {
+pub fn create_filter_tag(filter: Filter, id: Option<String>, description: Option<String>) -> Vec<Tag> {
     let mut tags: Vec<Tag> = vec![];
 
     if filter.ids.len() > 0 {
@@ -125,6 +126,11 @@ pub fn create_filter_tag(filter: Filter, description: Option<String>) -> Vec<Tag
 
     if description.is_some() {
         let tag = Tag::Generic(TagKind::from("description"), vec![description.unwrap()]);
+        tags.push(tag);
+    }
+
+    if id.is_some() {
+        let tag = Tag::Generic(TagKind::D, vec![id.unwrap()]);
         tags.push(tag);
     }
 
