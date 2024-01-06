@@ -26,6 +26,15 @@ yarn && yarn serve
 
 check browser `http://localhost:8080/` see console
 
+### Deploy Noscript
+
+create a `.secret` file and paste your Nostr private key
+
+```
+// generate and sign event
+cargo run --bin deploy
+```
+
 ## What is Noscript?
 
 Noscript means `Nostr Script`, which refers to the idea that we can put code on Nostr protocol(save the code in a special kind of Event, sign it and send it to the relay, basically), a Noscript is a piece of code to be running in a standard environment provided by Nostr client so there is no central control but user-generated alternatives, it can be used to provide custom feeds/recommend algorithms and so much more.

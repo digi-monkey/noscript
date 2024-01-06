@@ -5,7 +5,7 @@ pub struct Event {
     pub id: String,
     pub pubkey: String,
     pub created_at: i64,
-    pub kind: u16,
+    pub kind: i32,
     pub tags: Vec<Vec<String>>,
     pub content: String,
     pub sig: String,
@@ -69,3 +69,5 @@ impl Event {
         None
     }
 }
+
+pub const NOSCRIPT_KIND: i32 = 32024;

@@ -7,3 +7,5 @@ my_super_model.json
 /node_modules
 event.js
 *event.json
+
+.secret

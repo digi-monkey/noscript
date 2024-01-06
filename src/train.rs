@@ -1,4 +1,4 @@
-use crate::types::Event;
+use crate::types::{Event, NOSCRIPT_KIND};
 use csv;
 use serde::{Deserialize, Serialize};
 use serde_json::{from_reader, to_writer};
@@ -7,6 +7,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io;
 use std::io::BufReader;
+use std::time::{SystemTime, UNIX_EPOCH};
 use unicode_segmentation::UnicodeSegmentation;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -56,7 +57,7 @@ impl Train {
             }
         }
 
-	println!("trained, total tokens: {:#?}", self.token_table.len());
+        println!("trained, total tokens: {:#?}", self.token_table.len());
         Ok(())
     }
 
@@ -81,29 +82,32 @@ impl Train {
         Ok(())
     }
 
-    pub fn from_local_vecs_to_event() -> Result<(), io::Error> {
+    pub fn from_local_vecs_to_event() -> Result<Event, io::Error> {
         let spams = read_vec("spam-vec.txt").unwrap();
         let hams = read_vec("ham-vec.txt").unwrap();
         let token_vec = read_tokens("tokens.txt").unwrap();
 
         let file: File = File::create("algo_event.json")?;
+        let duration_since_epoch = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("Time went backwards");
+        let timestamp_seconds = duration_since_epoch.as_secs() as i64;
 
-        let value: Event = Event {
+        let event: Event = Event {
             content: "".to_string(),
-            created_at: 1704354395,
-            id: "a4e602e7ebb85bc3d3eae64476db5e2987d8370fc18f2b467b5c4c71fa8671da".to_string(),
-            kind: 32024,
-            pubkey: "8fb140b4e8ddef97ce4b821d247278a1a4353362623f64021484b372f948000c".to_string(),
-            sig: "cd986256fbdcc32b8064dd09bb2efc57e1d06914b8c4721b0524d35d70d59ccb471ea2df64c9c1cf47bb4b188c25718dbd56ce110073e563b326f0463b291fe1".to_string(),
+            created_at: timestamp_seconds,
+            id: "".to_string(),
+            kind: NOSCRIPT_KIND,
+            pubkey: "".to_string(),
+            sig: "".to_string(),
             tags: vec![spams.iter().map(|v|v.to_string()).collect(), hams.iter().map(|v|v.to_string()).collect(), token_vec],
           };
 
-        to_writer(file, &value)?;
-
-        Ok(())
+        to_writer(file, &event)?;
+        Ok(event)
     }
 
-    pub fn save_event(&self) -> Result<(), io::Error> {
+    pub fn save_event(&self) -> Result<Event, io::Error> {
         let mut spams: Vec<String> = vec!["spams".to_string()];
         let mut hams: Vec<String> = vec!["hams".to_string()];
         let mut words: Vec<String> = vec!["tokens".to_string()];
@@ -119,22 +123,28 @@ impl Train {
 
         let file: File = File::create("algo_event.json")?;
 
-        let value: Event = Event {
+        let duration_since_epoch = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("Time went backwards");
+        let timestamp_seconds = duration_since_epoch.as_secs() as i64;
+
+        let event: Event = Event {
             content: "".to_string(),
-            created_at: 1704354395,
-            id: "a4e602e7ebb85bc3d3eae64476db5e2987d8370fc18f2b467b5c4c71fa8671da".to_string(),
-            kind: 32024,
-            pubkey: "8fb140b4e8ddef97ce4b821d247278a1a4353362623f64021484b372f948000c".to_string(),
-            sig: "cd986256fbdcc32b8064dd09bb2efc57e1d06914b8c4721b0524d35d70d59ccb471ea2df64c9c1cf47bb4b188c25718dbd56ce110073e563b326f0463b291fe1".to_string(),
+            created_at: timestamp_seconds,
+            id: "".to_string(),
+            kind: NOSCRIPT_KIND,
+            pubkey: "".to_string(),
+            sig: "".to_string(),
             tags: vec![spams, hams, words],
           };
 
-        to_writer(file, &value)?;
+        to_writer(file, &event)?;
 
-        Ok(())
+        Ok(event)
     }
 
-    pub fn from_local_vecs_to_args() -> Result<(HashMap<String, u32>, Vec<u32>, Vec<u32>), std::io::Error> {
+    pub fn from_local_vecs_to_args(
+    ) -> Result<(HashMap<String, u32>, Vec<u32>, Vec<u32>), std::io::Error> {
         let spams = read_vec("spam-vec.txt").unwrap();
         let hams = read_vec("ham-vec.txt").unwrap();
         let token_vec = read_tokens("tokens.txt").unwrap();
@@ -144,7 +154,7 @@ impl Train {
             tokens.insert(token.to_string(), index as u32);
         }
 
-	Ok((tokens, spams, hams))
+        Ok((tokens, spams, hams))
     }
 
     /// Split `msg` into a list of words.
