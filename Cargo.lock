@@ -734,6 +734,7 @@ checksum = "e664971378a3987224f7a0e10059782035e89899ae403718ee07de85bec42afe"
 name = "noscript"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "csv",
  "js-sys",
  "nostr-sdk",
