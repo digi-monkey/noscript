@@ -25,6 +25,10 @@ base64 = "0.21.5"
 name = "deploy"
 path = "src/deploy.rs"
 
+[[bin]]
+name = "send"
+path = "src/send_test_data.rs"
+
 [lib]
 crate-type = ["cdylib"]
 

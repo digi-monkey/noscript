@@ -85,7 +85,13 @@ impl Train {
     pub fn from_local_vecs_to_event() -> Result<Event, io::Error> {
         let spams = read_vec("spam-vec.txt").unwrap();
         let hams = read_vec("ham-vec.txt").unwrap();
-        let token_vec = read_tokens("tokens.txt").unwrap();
+        let mut token_vec = read_tokens("tokens.txt").unwrap();
+
+        let mut spams: Vec<String> = spams.iter().map(|v|v.to_string()).collect();
+        spams.insert(0, "spams".to_string());
+        let mut hams: Vec<String> = hams.iter().map(|v|v.to_string()).collect();
+        hams.insert(0, "hams".to_string());
+        token_vec.insert(0, "tokens".to_string());
 
         let file: File = File::create("algo_event.json")?;
         let duration_since_epoch = SystemTime::now()
@@ -100,7 +106,7 @@ impl Train {
             kind: NOSCRIPT_KIND,
             pubkey: "".to_string(),
             sig: "".to_string(),
-            tags: vec![spams.iter().map(|v|v.to_string()).collect(), hams.iter().map(|v|v.to_string()).collect(), token_vec],
+            tags: vec![spams, hams, token_vec],
           };
 
         to_writer(file, &event)?;
